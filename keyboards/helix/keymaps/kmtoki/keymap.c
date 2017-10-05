@@ -185,6 +185,9 @@ float music_scale[][2]     = SONG(MUSIC_SCALE_SOUND);
 float tone_goodbye[][2]    = SONG(GOODBYE_SOUND);
 #endif
 
+// ssd1306 display status
+bool ssd1306_display_status = true;
+
 // define variables for reactive RGB
 bool TOG_STATUS = false;
 int RGB_current_mode;
@@ -195,7 +198,7 @@ void persistent_default_layer_set(uint16_t default_layer) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed) {
+  if (ssd1306_display_status && record->event.pressed) {
     ssd1306_graffiti();
   }
 
@@ -203,11 +206,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case SSD1306_ON:
       if (record->event.pressed) {
         ssd1306_on();
+        ssd1306_display_status = true;
       }
       break;
     case SSD1306_OFF:
       if (record->event.pressed) {
         ssd1306_off();
+        ssd1306_display_status = false;
       }
       break;
     case BACKLIT:
