@@ -248,6 +248,7 @@ void ssd1306_graffiti(void) {
   int cols = sizeof(bitmaps[0][0]) / sizeof(bitmaps[0][0][0]);
 
   // Move to the home position
+  send_cmd1(DeActivateScroll);
   send_cmd3(PageAddr, 0, DisplayHeight / 4 - 1);
   send_cmd3(ColumnAddr, 0, DisplayWidth - 1);
 
@@ -275,6 +276,8 @@ void ssd1306_graffiti(void) {
   if (frame == frames) {
     frame = 0;
   }
+
+  send_cmd1(ActivateScroll);
 
 done:
   i2c_master_stop();

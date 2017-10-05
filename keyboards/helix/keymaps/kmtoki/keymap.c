@@ -251,6 +251,7 @@ void matrix_init_user(void) {
 void matrix_master_OLED_init (void) {
   TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, 800000));
   ssd1306_init();
+  ssd1306_graffiti();
 }
 
 void matrix_scan_user(void) {
