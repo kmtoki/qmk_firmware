@@ -22,12 +22,22 @@ extern rgblight_config_t rgblight_config;
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
 
-enum custom_keycodes {
+enum my_layer {
   QWERTY,
   LOWER,
   RAISE,
   MEDIA,
-  ADJUST,
+  ADJUST
+};
+
+enum custom_keycodes {
+  _QWERTY = SAFE_RANGE,
+  _LOWER,
+  _RAISE,
+  _MEDIA,
+  _ADJUST,
+  SSD1306_ON,
+  SSD1306_OFF,
   BACKLIT,
   RGBLED_TOGGLE,
   RGBLED_STEP_MODE,
@@ -39,10 +49,6 @@ enum custom_keycodes {
   RGBLED_DECREASE_VAL,
 };
 
-enum macro_keycodes {
-  KC_SAMPLEMACRO,
-};
-
 
 // Fillers to make layering more clear
 #define ____ KC_TRNS
@@ -52,6 +58,12 @@ enum macro_keycodes {
 #define NEXTTAB ACTION_MODS_KEY(MOD_LGUI, KC_RCBR)
 #define PREVTAB ACTION_MODS_KEY(MOD_LGUI, KC_LCBR)
 
+#ifdef SSD1306OLED
+//#include "ssd1306.h"
+#include "ssd1306_graffiti.h"
+#endif
+
+#if HELIX_ROWS == 5 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   /* Qwerty
@@ -142,7 +154,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |------+------+------+------+------+------+------+------+------+------+------+------|
    * |      |      |      |      |      |      |      |      |      |      |      |      |
    * |------+------+------+------+------+------+------+------+------+------+------+------|
-   * |      |      |      |Aud on|Audoff|AGnorm|AGswap|      |      |      |      |      |
+   * |      |      |      |Aud on|Audoff|AGnorm|AGswap|SSDOn |SSDOff|      |      |      |
    * |------+------+------+------+------+------+------+------+------+------+------+------|
    * |      |      |      |RGB_TO|RGB_HI|RGB_HD|RGB_SI|RGB_SD|RGB_VI|RGB_VD|RGB_MD|      |
    * |------+------+------+------+------+------+------+------+------+------+------+------|
@@ -150,13 +162,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * `-----------------------------------------------------------------------------------'
    */
   [ADJUST] =  KEYMAP( \
-      KC_F1, KC_F2, KC_F3, KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12, \
-      ____,  ____,  ____,  ____,    ____,    ____,    ____,    ____,    ____,    ____,    ____,    ____,   \
-      ____,  ____,  ____,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, ____,    ____,    ____,    ____,    ____,   \
-      ____,  ____,  ____,  RGB_TOG, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD, RGB_VAI, RGB_VAD, RGB_MOD, ____,   \
-      ____,  ____,  ____,  ____,    ____,    ____,    ____,    ____,    ____,    ____,    ____,    RESET   \
+      KC_F1, KC_F2, KC_F3, KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,      KC_F9,       KC_F10,  KC_F11,  KC_F12, \
+      ____,  ____,  ____,  ____,    ____,    ____,    ____,    ____,       ____,        ____,    ____,    ____,   \
+      ____,  ____,  ____,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, SSD1306_ON, SSD1306_OFF, ____,    ____,    ____,   \
+      ____,  ____,  ____,  RGB_TOG, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,    RGB_VAI,     RGB_VAD, RGB_MOD, ____,   \
+      ____,  ____,  ____,  ____,    ____,    ____,    ____,    ____,       ____,        ____,    ____,    RESET   \
       )
 };
+#else
+#error "undefined keymaps"
+#endif
 
 #ifdef AUDIO_ENABLE
 
@@ -185,44 +200,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
 
   switch (keycode) {
-    case QWERTY:
+    case SSD1306_ON:
       if (record->event.pressed) {
-#ifdef AUDIO_ENABLE
-        PLAY_NOTE_ARRAY(tone_qwerty, false, 0);
-#endif
+        ssd1306_on();
       }
-      return false;
       break;
-    case LOWER:
+    case SSD1306_OFF:
       if (record->event.pressed) {
-        //not sure how to have keyboard check mode and set it to a variable, so my work around
-        //uses another variable that would be set to true after the first time a reactive key is pressed.
-        if (TOG_STATUS) { //TOG_STATUS checks is another reactive key currently pressed, only changes RGB mode if returns false
-        } else {
-          TOG_STATUS = !TOG_STATUS;
-          rgblight_mode(16);
-        }
-        rgblight_mode(RGB_current_mode);
-      } else {
-        rgblight_mode(RGB_current_mode);   // revert RGB to initial mode prior to RGB mode change
-        TOG_STATUS = false;
+        ssd1306_off();
       }
-      return false;
-      break;
-    case RAISE:
-      if (record->event.pressed) {
-        //not sure how to have keyboard check mode and set it to a variable, so my work around
-        //uses another variable that would be set to true after the first time a reactive key is pressed.
-        if (TOG_STATUS) { //TOG_STATUS checks is another reactive key currently pressed, only changes RGB mode if returns false
-        } else {
-          TOG_STATUS = !TOG_STATUS;
-          rgblight_mode(15);
-        }
-      } else {
-        rgblight_mode(RGB_current_mode);  // revert RGB to initial mode prior to RGB mode change
-        TOG_STATUS = false;
-      }
-      return false;
       break;
     case BACKLIT:
       if (record->event.pressed) {
