@@ -141,10 +141,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * `-----------------------------------------------------------------------------------'
    */
   [MEDIA] = KEYMAP( \
-      ____, ____, ____,    ____,    ____,    ____,    ____,    ____,    ____,    ____,     ____,    ____,    \
       ____, ____, ____,    ____,    ____,    ____,    KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE,  KC_VOLD, KC_VOLU, \
       ____, ____, KC_WH_U, KC_MS_U, KC_WH_D, KC_PAUS, KC_HOME, KC_PGDN, KC_UP,   KC_PGUP,  ____,    ____,    \
       ____, ____, KC_MS_L, KC_MS_D, KC_MS_R, KC_INS,  KC_END,  KC_LEFT, KC_DOWN, KC_RIGHT, ____,    ____,    \
+      ____, ____, ____,    ____,    ____,    ____,    ____,    ____,    ____,    ____,     ____,    ____,    \
       ____, ____, ____,    ____,    KC_BTN2, KC_BTN1, PREVTAB, NEXTTAB, ____,    ____,     ____,    ____     \
       ),
 
