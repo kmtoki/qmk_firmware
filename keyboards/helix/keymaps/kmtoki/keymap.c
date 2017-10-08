@@ -9,7 +9,6 @@
 #ifdef SSD1306OLED
 //#include "ssd1306.h"
 #include "ssd1306_doublewidth.h"
-//#include "ssd1306_doublewidth_.h"
 #endif
 
 extern keymap_config_t keymap_config;
@@ -65,11 +64,6 @@ enum custom_keycodes {
 // for MacOS
 #define NEXTTAB ACTION_MODS_KEY(MOD_LGUI, KC_RCBR)
 #define PREVTAB ACTION_MODS_KEY(MOD_LGUI, KC_LCBR)
-
-#ifdef SSD1306OLED
-//#include "ssd1306.h"
-#include "ssd1306_graffiti.h"
-#endif
 
 #if HELIX_ROWS == 5 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -223,8 +217,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       c = '?';
     }
 
-    iota_gfx_write_char(c);
-    iota_gfx_flush();
+    (void)c;
   }
 
   switch (keycode) {
@@ -267,6 +260,7 @@ void matrix_master_OLED_init (void) {
 }
 
 void matrix_scan_user(void) {
+  iota_gfx_task();
 }
 #endif
 
