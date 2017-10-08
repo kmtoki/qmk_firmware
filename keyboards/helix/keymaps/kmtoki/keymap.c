@@ -8,7 +8,8 @@
 #endif
 #ifdef SSD1306OLED
 //#include "ssd1306.h"
-#include "ssd1306_graffiti.h"
+#include "ssd1306_doublewidth.h"
+//#include "ssd1306_doublewidth_.h"
 #endif
 
 extern keymap_config_t keymap_config;
@@ -36,8 +37,6 @@ enum custom_keycodes {
   _RAISE,
   _MEDIA,
   _ADJUST,
-  SSD1306_ON,
-  SSD1306_OFF,
   BACKLIT,
   RGBLED_TOGGLE,
   RGBLED_STEP_MODE,
@@ -47,6 +46,15 @@ enum custom_keycodes {
   RGBLED_DECREASE_SAT,
   RGBLED_INCREASE_VAL,
   RGBLED_DECREASE_VAL,
+  SSD_ON,
+  SSD_OFF,
+  KC_IV1,
+  KC_IV2,
+  KC_IV3,
+  KC_IV4,
+  KC_IV5,
+  KC_IV6,
+  KC_IV7,
 };
 
 
@@ -122,11 +130,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * `-----------------------------------------------------------------------------------'
    */
   [RAISE] = KEYMAP( \
-      KC_GRV, KC_1, KC_2, KC_3, KC_4,     KC_5, KC_6, KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL,  \
-      KC_GRV, KC_1, KC_2, KC_3, KC_4,     KC_5, KC_6, KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC, \
-      ____,   ____, ____, ____, ____,     ____, ____, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, ____,    \
-      ____,   ____, ____, ____, ____,     ____, ____, KC_GRV,  KC_BSLS, ____,    ____,    ____,    \
-      ____,   ____, ____, ____, KC_LANG2, ____, ____, ____,    ____,    ____,    ____,    ____     \
+      KC_GRV, KC_1,   KC_2,   KC_3,   KC_4,     KC_5,   KC_6, KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL,  \
+      KC_GRV, KC_1,   KC_2,   KC_3,   KC_4,     KC_5,   KC_6, KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC, \
+      ____,   KC_IV1, KC_IV2, KC_IV3, KC_IV4,   KC_IV5, ____, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, ____,    \
+      ____,   KC_IV6, KC_IV7, ____,   ____,     ____,   ____, KC_GRV,  KC_BSLS, ____,    ____,    ____,    \
+      ____,   ____,   ____,   ____,   KC_LANG2, ____,   ____, ____,    ____,    ____,    ____,    ____     \
       ),
 
   /* Media 
@@ -164,7 +172,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [ADJUST] =  KEYMAP( \
       KC_F1, KC_F2, KC_F3, KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,      KC_F9,       KC_F10,  KC_F11,  KC_F12, \
       ____,  ____,  ____,  ____,    ____,    ____,    ____,    ____,       ____,        ____,    ____,    ____,   \
-      ____,  ____,  ____,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, SSD1306_ON, SSD1306_OFF, ____,    ____,    ____,   \
+      ____,  ____,  ____,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, SSD_ON, SSD_OFF, ____,    ____,    ____,   \
       ____,  ____,  ____,  RGB_TOG, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,    RGB_VAI,     RGB_VAD, RGB_MOD, ____,   \
       ____,  ____,  ____,  ____,    ____,    ____,    ____,    ____,       ____,        ____,    ____,    RESET   \
       )
@@ -185,9 +193,6 @@ float music_scale[][2]     = SONG(MUSIC_SCALE_SOUND);
 float tone_goodbye[][2]    = SONG(GOODBYE_SOUND);
 #endif
 
-// ssd1306 display status
-bool ssd1306_display_status = true;
-
 // define variables for reactive RGB
 bool TOG_STATUS = false;
 int RGB_current_mode;
@@ -198,23 +203,31 @@ void persistent_default_layer_set(uint16_t default_layer) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (ssd1306_display_status && record->event.pressed) {
-    ssd1306_graffiti();
+  if (keycode >= KC_IV1 && keycode <= KC_IV7) {
+    uint16_t c;
+    if (keycode == KC_IV1) {
+      c = 256;
+    } else if (keycode == KC_IV2) {
+      c = 257;
+    } else if (keycode == KC_IV3) {
+      c = 258;
+    } else if (keycode == KC_IV4) {
+      c = 259;
+    } else if (keycode == KC_IV5) {
+      c = 260;
+    } else if (keycode == KC_IV6) {
+      c = 261;
+    } else if (keycode == KC_IV7) {
+      c = 262;
+    } else {
+      c = '?';
+    }
+
+    iota_gfx_write_char(c);
+    iota_gfx_flush();
   }
 
   switch (keycode) {
-    case SSD1306_ON:
-      if (record->event.pressed) {
-        ssd1306_on();
-        ssd1306_display_status = true;
-      }
-      break;
-    case SSD1306_OFF:
-      if (record->event.pressed) {
-        ssd1306_off();
-        ssd1306_display_status = false;
-      }
-      break;
     case BACKLIT:
       if (record->event.pressed) {
         register_code(KC_RSFT);
@@ -250,8 +263,7 @@ void matrix_init_user(void) {
 #ifdef SSD1306OLED
 void matrix_master_OLED_init (void) {
   TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, 800000));
-  ssd1306_init();
-  ssd1306_graffiti();
+  iota_gfx_init();
 }
 
 void matrix_scan_user(void) {
