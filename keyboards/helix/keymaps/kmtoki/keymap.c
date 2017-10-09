@@ -260,7 +260,7 @@ void matrix_master_OLED_init (void) {
 }
 
 void matrix_scan_user(void) {
-  iota_gfx_task();
+  //iota_gfx_task();
 }
 #endif
 

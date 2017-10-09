@@ -14,5 +14,6 @@ void iota_gfx_write_char(uint16_t c);
 void iota_gfx_write(const char *data);
 void iota_gfx_write_P(const char *data);
 void iota_gfx_clear_screen(void);
+void iota_gfx_graffiti(void);
 
 #endif
