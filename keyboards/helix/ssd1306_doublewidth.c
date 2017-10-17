@@ -237,7 +237,6 @@ bool iota_gfx_init(void) {
   success = true;
 
   iota_gfx_flush();
-  iota_gfx_graffiti();
 
 #if DEBUG_TO_SCREEN
   print_set_sendchar(capture_sendchar);
@@ -515,7 +514,7 @@ static void render_status_info(void) {
   matrix_update(&display, &matrix);
 }
 
-void iota_gfx_graffiti(void) {
+void iota_gfx_qmk_logo(void) {
   last_flush = timer_read();
   iota_gfx_on();
   iota_gfx_clear_screen();
@@ -559,21 +558,11 @@ done:
 void iota_gfx_task(void) {
   render_status_info();
   if (display.dirty) {
-    send_cmd1(DeActivateScroll);
-    //send_cmd1(RightHorizontalScroll);
-    //send_cmd3(0,0,0);
-    //send_cmd3(0,0,0xff);
-
     iota_gfx_flush();
-
-    //send_cmd1(ActivateScroll);
   }
 
   if (timer_elapsed(last_flush) > ScreenOffInterval) {
     iota_gfx_off();
   }
-
-done:
-  return;
 }
 #endif
