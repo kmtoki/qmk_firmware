@@ -258,6 +258,7 @@ void matrix_master_OLED_init (void) {
   TWI_Init(TWI_BIT_PRESCALE_1, TWI_BITLENGTH_FROM_FREQ(1, 800000));
   iota_gfx_init();
   iota_gfx_qmk_logo();
+  iota_gfx_invader();
 }
 
 void matrix_scan_user(void) {

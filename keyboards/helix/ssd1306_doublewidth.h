@@ -15,5 +15,6 @@ void iota_gfx_write(const char *data);
 void iota_gfx_write_P(const char *data);
 void iota_gfx_clear_screen(void);
 void iota_gfx_qmk_logo(void);
+void iota_gfx_invader(void);
 
 #endif
