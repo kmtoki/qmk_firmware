@@ -20,6 +20,9 @@ enum preonic_keycodes {
   NICOLA_L,
   NICOLA_R,
   IME,
+  WINDOWS,
+  LINUX,
+  DARWIN,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -107,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   _______, _______, KC_MS_U, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R, _______, _______, \
   _______, KC_MS_L, KC_MS_D, KC_MS_R, _______, _______, _______, KC_BTN1, KC_BTN2, KC_BTN3, KC_BTN4, KC_BTN5, \
   _______, KC_ACL0, KC_ACL1, KC_ACL2, _______, _______, _______, _______, _______, _______, AG_NORM, AG_SWAP, \
-  RESET,   _______, _______, _______, _______, _______, _______, _______, _______, UC_M_MA, UC_M_LN, UC_M_WC  \
+  RESET,   _______, _______, _______, _______, _______, _______, _______, _______, DARWIN,  LINUX,   WINDOWS  \
 ),
 
 /* Nicola
@@ -183,6 +186,7 @@ void matrix_init_user(void) {
 
 bool is_ime = false;
 bool is_nicola = false;
+int os_mode = 0; // 0: windows, 1: linux, 2: darwin
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case QWERTY:
@@ -193,7 +197,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         is_nicola = false;
         is_ime = false;
         set_single_persistent_default_layer(_QWERTY);
-        tap_code(KC_LNG1);
+        if (os_mode != 0) {
+          tap_code(KC_LNG1);
+        } else {
+          tap_code16(LALT(KC_GRV));
+        }
       }
       return false;
     case LOWER:
@@ -216,12 +224,34 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
     case IME:
       if (record->event.pressed) {
-        if (is_ime) {
-          tap_code(KC_LNG1);
+        if (os_mode != 0) {
+          if (is_ime) {
+            tap_code(KC_LNG1);
+          } else {
+            tap_code(KC_LNG2);
+          }
         } else {
-          tap_code(KC_LNG2);
+          tap_code16(LALT(KC_GRV));
         }
         is_ime = !is_ime;
+      }
+      return false;
+    case WINDOWS:
+      if (record->event.pressed) {
+        os_mode = 0;
+        set_unicode_input_mode(UC_WINC);
+      }
+      return false;
+    case LINUX:
+      if (record->event.pressed) {
+        os_mode = 1;
+        set_unicode_input_mode(UC_LNX);
+      }
+      return false;
+    case DARWIN:
+      if (record->event.pressed) {
+        os_mode = 2;
+        set_unicode_input_mode(UC_MAC);
       }
       return false;
     case NICOLA:
@@ -229,7 +259,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         is_nicola = true;
         is_ime = true;
         layer_on(_NICOLA);
-        tap_code(KC_LNG2);
+        if (os_mode != 0) {
+          tap_code(KC_LNG2);
+        } else {
+          tap_code16(LALT(KC_GRV));
+        }
       }
       return false;
     case NICOLA_L:

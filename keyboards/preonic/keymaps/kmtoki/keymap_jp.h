@@ -4,6 +4,10 @@
 #define JP_HENK KC_INT4
 #define JP_MHEN KC_INT5
 
+#define JIS_KATA KC_LNG3
+#define JIS_HIRA KC_LNG4
+#define JIS_ZENHAN KC_LNG5
+
 #define JP_SPACE  X(CJK_ISPACE)
 #define JP_COMMA  X(CJK_ICOMMA)
 #define JP_STOP   X(CJK_IFSTOP)
