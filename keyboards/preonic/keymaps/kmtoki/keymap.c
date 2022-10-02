@@ -147,7 +147,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             tap_code(KC_LNG2);
           }
         } else {
-          tap_code16(LALT(KC_GRV));
+          register_code(KC_LCTL);
+          register_code(KC_GRV);
+          unregister_code(KC_GRV);
+          unregister_code(KC_LCTL);
+          //tap_code16(LALT(KC_GRV));
         }
         is_ime = !is_ime;
       }
