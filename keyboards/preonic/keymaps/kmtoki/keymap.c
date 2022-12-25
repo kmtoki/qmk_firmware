@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "keymap_jp.h"
 
 enum preonic_layers {
   _QWERTY = 0,
@@ -140,19 +141,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
     case IME:
       if (record->event.pressed) {
-        if (os_mode != 0) {
-          if (is_ime) {
-            tap_code(KC_LNG1);
-          } else {
-            tap_code(KC_LNG2);
-          }
-        } else {
-          register_code(KC_LCTL);
-          register_code(KC_GRV);
-          unregister_code(KC_GRV);
-          unregister_code(KC_LCTL);
-          //tap_code16(LALT(KC_GRV));
-        }
+          //if (os_mode != 0) {
+          //  if (is_ime) {
+          //    tap_code(JP_MHEN);
+          //  } else {
+          //    tap_code(JP_HENK);
+          //  }
+          //} else {
+          //  register_code(KC_GRV);
+          //  unregister_code(KC_GRV);
+          //  unregister_code(KC_LCTL);
+          //  tap_code16(LALT(KC_GRV));
+          //}
+        tap_code16(LCTL(KC_SPC));
         is_ime = !is_ime;
       }
       return false;
